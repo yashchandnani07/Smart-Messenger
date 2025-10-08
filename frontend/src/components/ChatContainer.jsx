@@ -4,14 +4,19 @@ import { ChatContext } from "../../context/ChatContext";
 import { AuthContext } from "../../context/AuthContext";
 import toast from "react-hot-toast";
 import assets from "../assets/assets";
+import SummaryModal from "./SummaryModal";
 
 const ChatContainer = () => {
-  const { messages, selectedUser, setSelectedUser, sendMessages, getMessages } =
+  const { messages, selectedUser, setSelectedUser, sendMessages, getMessages, generateSummary } =
     useContext(ChatContext);
   const { authUser, onlineUsers } = useContext(AuthContext);
   const scrollEnd = useRef();
 
   const [input, setInput] = useState("");
+  const [showSummaryModal, setShowSummaryModal] = useState(false);
+  const [summary, setSummary] = useState("");
+  const [summaryLoading, setSummaryLoading] = useState(false);
+  const [messageCount, setMessageCount] = useState(0);
 
   //handle sending a message
   const handleSendMessage = async (e) => {
@@ -34,6 +39,34 @@ const ChatContainer = () => {
       e.target.value = "";
     };
     reader.readAsDataURL(file);
+  };
+
+  //Handle generating summary
+  const handleGenerateSummary = async () => {
+    if (!selectedUser) {
+      toast.error("Please select a conversation first");
+      return;
+    }
+
+    setShowSummaryModal(true);
+    setSummaryLoading(true);
+    setSummary("");
+    
+    try {
+      const result = await generateSummary(selectedUser._id, authUser.fullName);
+      if (result.success) {
+        setSummary(result.summary);
+        setMessageCount(result.messageCount || 0);
+      } else {
+        toast.error(result.message || "Failed to generate summary");
+        setShowSummaryModal(false);
+      }
+    } catch (error) {
+      toast.error("Failed to generate summary");
+      setShowSummaryModal(false);
+    } finally {
+      setSummaryLoading(false);
+    }
   };
 
   useEffect(() => {
@@ -63,6 +96,16 @@ const ChatContainer = () => {
             <span className="w-2 h-2 rounded-full bg-green-500 "></span>
           )}
         </p>
+        
+        {/* Generate Summary Button */}
+        <button
+          onClick={handleGenerateSummary}
+          className="bg-violet-600 hover:bg-violet-700 text-white text-xs px-3 py-1 rounded-full transition-colors mr-2"
+          title="Generate Chat Summary"
+        >
+          📋 Summary
+        </button>
+        
         <img
           onClick={() => setSelectedUser(null)}
           src={assets.arrow_icon}
@@ -150,6 +193,15 @@ const ChatContainer = () => {
           className="w-7 cursor-pointer"
         />
       </div>
+      
+      {/* Summary Modal */}
+      <SummaryModal
+        isOpen={showSummaryModal}
+        onClose={() => setShowSummaryModal(false)}
+        summary={summary}
+        loading={summaryLoading}
+        messageCount={messageCount}
+      />
     </div>
   ) : (
     <div className="flex flex-col items-center justify-center gap-2 text-gray-500 bg-white/10 max-md:hidden">

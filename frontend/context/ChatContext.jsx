@@ -82,6 +82,20 @@ export const ChatProvider = ({ children }) => {
     }
   };
 
+  //function to generate chat summary
+  const generateSummary = async (conversationId, user) => {
+    try {
+      const response = await axios.post("/api/summary/generate", {
+        conversationId,
+        user,
+      });
+      return response.data;
+    } catch (error) {
+      toast.error("Failed to generate summary");
+      return { success: false, message: error.message };
+    }
+  };
+
   useEffect(() => {
     subscribeToMessage();
     return () => unsubscribeFromMessages();
@@ -97,6 +111,7 @@ export const ChatProvider = ({ children }) => {
     setSelectedUser,
     unseenMessages,
     setUnseenMessages,
+    generateSummary,
   };
   return <ChatContext.Provider value={value}>{children}</ChatContext.Provider>;
 };
