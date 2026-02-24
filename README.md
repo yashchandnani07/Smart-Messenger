@@ -64,19 +64,7 @@ git clone https://github.com/yashchandnani07/Smart-Messenger
 cd Smart-Messenger
 ```
 
-2. **Install backend dependencies**
-```bash
-cd server
-npm install
-```
-
-3. **Install frontend dependencies**
-```bash
-cd ../frontend
-npm install
-```
-
-4. **Set up environment variables**
+2. **Set up environment variables**
 
 Create `server/.env`:
 ```env
@@ -95,28 +83,30 @@ Create `frontend/.env`:
 VITE_BACKEND_URL=http://localhost:5000
 ```
 
-5. **(Optional) Seed demo accounts**
+### 3️ Setup & Start Backend
+
 ```bash
 cd server
+npm install
 node seed.js
-```
-This creates two pre-loaded demo accounts: `yash@demo.sm` and `siya@demo.sm` (password: `demo123`) with sample messages.
-
-6. **Start the application**
-
-Backend:
-```bash
-cd server
 npm start
 ```
 
-Frontend:
+ **This will:**
+- Install all backend dependencies
+- Seed demo accounts: `yash@demo.sm`, `siya@demo.sm`
+- Start the backend server
+
+📍 **Backend will run on:** http://localhost:5000
+
+### 4️ Setup & Start Frontend
+
 ```bash
 cd frontend
+npm install
 npm run dev
 ```
-
-App available at `http://localhost:5173`
+📍 **Frontend will be available at:** http://localhost:5173
 
 ## 📦 API Endpoints
 
