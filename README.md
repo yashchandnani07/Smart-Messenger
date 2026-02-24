@@ -1,54 +1,67 @@
 # Smart Messenger
 
-A full-stack real-time chat application with AI-powered conversation summarization capabilities. Built with React, Node.js, Express, MongoDB, and Groq AI.
+A full-stack real-time chat application with AI-powered features built with React, Node.js, Express, MongoDB, Socket.IO and Groq AI.
 
 ## 🌟 Features
 
-- **Real-time Messaging**: Instant one-on-one text messaging with online/offline status indicators
-- **AI Conversation Summarization**: Generate structured summaries of conversations using Groq AI
-- **Image Sharing**: Send and receive images with Cloudinary integration
-- **User Authentication**: Secure JWT-based authentication system
-- **Profile Management**: Update user profiles with bio, name, and profile pictures
-- **Read Receipts**: Message seen indicators
-- **Unread Message Counters**: Visual indicators for unread messages
-- **Responsive Design**: Works on desktop and mobile devices
+### Core Chat
+- **Real-time Messaging** — Instant one-on-one messaging via Socket.IO
+- **Image Sharing** — Send and receive images with Cloudinary integration
+- **Read Receipts** — Message seen indicators
+- **Unread Message Counters** — Visual indicators for unread messages
+- **Online/Offline Status** — Live presence indicators
+
+### AI-Powered (Groq)
+- **🎙️ Voice Messages** — Record audio, transcribed to text via Groq Whisper in real-time
+- **💡 Smart Reply Suggestions** — 3 AI-generated quick-reply chips after every received message
+- **🌐 Message Translator** — Translate any message to English with one click
+- **✍️ AI Tone Rewriter** — Rewrite your draft in Professional, Casual, or Funny tone before sending
+- **📋 Conversation Summary** — Generate a structured AI summary of any conversation
+
+### UX Enhancements
+- **⌨️ Typing Indicator** — Animated bouncing-dot bubble while the other person types
+- **👤 Demo Accounts** — One-click login as Yash or Siya to explore the app instantly
+- **User Authentication** — Secure JWT-based auth
+- **Profile Management** — Update name, bio, and profile picture
+- **Responsive Design** — Adapts to desktop and mobile
 
 ## 🛠️ Tech Stack
 
 ### Frontend
-- **React**: Component-based UI library
-- **Vite**: Fast build tool and development server
-- **Tailwind CSS**: Utility-first CSS framework
-- **Socket.io Client**: Real-time bidirectional communication
-- **React Router**: Client-side routing
-- **Axios**: HTTP client for API requests
+- **React 18** — Component-based UI
+- **Vite** — Fast HMR dev server and build tool
+- **Tailwind CSS** — Utility-first styling
+- **Socket.IO Client** — Real-time bidirectional communication
+- **React Router** — Client-side routing
+- **Axios** — HTTP client
 
 ### Backend
-- **Node.js**: JavaScript runtime environment
-- **Express**: Web application framework
-- **Socket.io**: Real-time bidirectional event-based communication
-- **MongoDB**: NoSQL database with Mongoose ODM
-- **JWT**: Authentication and authorization
-- **Bcrypt**: Password hashing
-- **Cloudinary**: Cloud-based image storage and management
+- **Node.js 18+** / **Express** — REST API server (ES modules)
+- **Socket.IO** — Real-time events (messaging, typing indicator)
+- **MongoDB** + **Mongoose** — NoSQL database
+- **JWT** — Authentication and route protection
+- **Bcrypt** — Password hashing
+- **Cloudinary** — Cloud image storage
+- **Multer** — Audio file upload handling
 
 ### AI Integration
-- **Groq**: AI-powered conversation summarization using Llama 3.1 8B Instant model
+- **Groq — `whisper-large-v3`** — Voice-to-text transcription
+- **Groq — `llama-3.1-8b-instant`** — Smart replies, translation, tone rewriter, conversation summary
 
 ## 🚀 Quick Start
 
 ### Prerequisites
-- Node.js (v18 or higher)
-- MongoDB Atlas account or local MongoDB installation
+- Node.js v18 or higher
+- MongoDB Atlas account (or local MongoDB)
 - Cloudinary account
-- Groq API key
+- Groq API key ([get one free at console.groq.com](https://console.groq.com))
 
 ### Installation
 
 1. **Clone the repository**
 ```bash
 git clone https://github.com/yashchandnani07/Smart-Messenger
-cd smart-messenger
+cd Smart-Messenger
 ```
 
 2. **Install backend dependencies**
@@ -65,129 +78,102 @@ npm install
 
 4. **Set up environment variables**
 
-Create a `.env` file in the `server` directory:
+Create `server/.env`:
 ```env
 MONGODB_URI=your_mongodb_atlas_connection_string
-JWT_SECRET=your_jwt_secret
+JWT_SECRET=your_jwt_secret_key
 GROQ_API_KEY=your_groq_api_key
-CLOUDINARY_CLOUD_NAME=your_cloudinary_name
+CLOUDINARY_CLOUD_NAME=your_cloudinary_cloud_name
 CLOUDINARY_API_KEY=your_cloudinary_api_key
 CLOUDINARY_API_SECRET=your_cloudinary_api_secret
 PORT=5000
 NODE_ENV=development
 ```
 
-Create a `.env` file in the `frontend` directory:
+Create `frontend/.env`:
 ```env
 VITE_BACKEND_URL=http://localhost:5000
 ```
 
-5. **Run the application**
-
-Start the backend server:
+5. **(Optional) Seed demo accounts**
 ```bash
 cd server
-npm run server  # or npm start for production
+node seed.js
+```
+This creates two pre-loaded demo accounts: `yash@demo.sm` and `siya@demo.sm` (password: `demo123`) with sample messages.
+
+6. **Start the application**
+
+Backend:
+```bash
+cd server
+npm start
 ```
 
-Start the frontend development server:
+Frontend:
 ```bash
 cd frontend
 npm run dev
 ```
 
-The application will be available at `http://localhost:5173`
+App available at `http://localhost:5173`
 
 ## 📦 API Endpoints
 
 ### Authentication
-- `POST /api/auth/signup` - Create a new user account
-- `POST /api/auth/login` - Login with email and password
-- `PUT /api/auth/update-profile` - Update user profile (requires authentication)
-- `GET /api/auth/check` - Check if user is authenticated (requires valid JWT)
+| Method | Endpoint | Description |
+|--------|----------|-------------|
+| POST | `/api/auth/signup` | Create a new account |
+| POST | `/api/auth/login` | Login |
+| PUT | `/api/auth/update-profile` | Update profile (auth required) |
+| GET | `/api/auth/check` | Verify JWT token |
 
 ### Messages
-- `GET /api/messages/users` - Get all users for sidebar (requires authentication)
-- `GET /api/messages/:id` - Get messages with a specific user (requires authentication)
-- `POST /api/messages/send/:id` - Send a message to a user (requires authentication)
-- `PUT /api/messages/mark/:id` - Mark a message as seen (requires authentication)
+| Method | Endpoint | Description |
+|--------|----------|-------------|
+| GET | `/api/messages/users` | Get all sidebar users |
+| GET | `/api/messages/:id` | Get messages with a user |
+| POST | `/api/messages/send/:id` | Send a message |
+| PUT | `/api/messages/mark/:id` | Mark message as seen |
 
-### AI Summarization
-- `POST /api/summary/generate` - Generate conversation summary (requires authentication)
-
-## 🤖 AI Summarization
-
-The Smart Messenger features AI-powered conversation summarization using Groq's Llama 3.1 8B Instant model. The summary includes:
-
-- Key discussion points
-- Tasks and action items
-- Scheduled events
-- Important decisions
-- Topics related to specific users
-
-To use the AI summary feature:
-1. Select a conversation
-2. Click the "📋 Summary" button
-3. Wait for the AI to process the conversation
-4. View the structured summary in the modal
+### AI Features
+| Method | Endpoint | Description |
+|--------|----------|-------------|
+| POST | `/api/summary/generate` | Generate conversation summary |
+| POST | `/api/voice/transcribe` | Transcribe audio → text (Whisper) |
+| POST | `/api/smart-reply/generate` | Generate 3 quick reply suggestions |
+| POST | `/api/translate/translate` | Translate a message to English |
+| POST | `/api/rewrite/rewrite` | Rewrite message in a given tone |
 
 ## 🗂️ Project Structure
 
 ```
-smart-messenger/
+Smart-Messenger/
 ├── frontend/
-│   ├── context/            # React context providers
-│   ├── src/
-│   │   ├── components/     # React components
-│   │   ├── pages/          # Page components
-│   │   ├── assets/         # Static assets
-│   │   └── lib/            # Utility functions
-│   ├── public/             # Public assets
-│   └── ...
-├── server/
-│   ├── controllers/        # API controllers
-│   ├── models/             # Database models
-│   ├── routes/             # API routes
-│   ├── middleware/         # Middleware functions
-│   ├── lib/                # Utility functions
-│   └── ...
-└── README.md
+│   ├── context/                # React context (Auth, Chat)
+│   └── src/
+│       ├── components/         # ChatContainer, Sidebar, RightSidebar, SummaryModal
+│       ├── pages/              # HomePage, LoginPage, ProfilePage
+│       ├── assets/             # Icons and images
+│       └── lib/                # Utility functions
+└── server/
+    ├── controllers/            # userControllers, messageController, summaryController,
+    │                           # voiceController, smartReplyController,
+    │                           # translateController, rewriteController
+    ├── models/                 # User, Message schemas
+    ├── routes/                 # All route files
+    ├── middleware/             # protectRoute auth middleware
+    ├── lib/                    # db.js, cloudinary.js, utils.js
+    ├── uploads/                # Temporary audio uploads (gitignored)
+    └── seed.js                 # Demo data seeder
 ```
 
-## 🚨 Environment Variables
+## 🔐 Security
+- JWT authentication on all protected routes
+- Passwords hashed with bcrypt
+- Temporary audio files deleted immediately after transcription
+- Cloudinary for secure media storage
 
-### Server
-- `MONGODB_URI`: MongoDB connection string
-- `JWT_SECRET`: Secret key for JWT token signing
-- `GROQ_API_KEY`: API key for Groq AI service
-- `CLOUDINARY_CLOUD_NAME`: Cloudinary cloud name
-- `CLOUDINARY_API_KEY`: Cloudinary API key
-- `CLOUDINARY_API_SECRET`: Cloudinary API secret
-- `PORT`: Port number for the server (default: 5000)
-- `NODE_ENV`: Environment mode (development/production)
-
-### Frontend
-- `VITE_BACKEND_URL`: URL of the backend server
-
-## 🔐 Security Features
-
-- JWT-based authentication for all protected routes
-- Password hashing with bcrypt
-- Input validation and sanitization
-- Secure file uploads with Cloudinary
-
-## 📱 Mobile Responsiveness
-
-The application is designed to work on various screen sizes:
-- Desktop: Full three-column layout with sidebar, chat window, and right sidebar
-- Mobile: Collapsible sidebar and simplified interface
-
-## 🤝 Contributing
-
-1. Fork the repository
-2. Create a feature branch (`git checkout -b feature/amazing-feature`)
-3. Make your changes
-4. Commit your changes (`git commit -m 'Add some amazing feature'`)
-5. Push to the branch (`git push origin feature/amazing-feature`)
-6. Open a pull request
-
+## 📱 Responsiveness
+- **Desktop**: Three-column layout — sidebar, chat window, right sidebar
+- **Mobile**: Collapsible sidebar, simplified layout
