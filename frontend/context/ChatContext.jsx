@@ -96,6 +96,54 @@ export const ChatProvider = ({ children }) => {
     }
   };
 
+  //function to transcribe audio using Groq Whisper
+  const transcribeAudio = async (audioBlob) => {
+    try {
+      const formData = new FormData();
+      formData.append("audio", audioBlob, "voice.webm");
+      const { data } = await axios.post("/api/voice/transcribe", formData, {
+        headers: { "Content-Type": "multipart/form-data" },
+      });
+      return data;
+    } catch (error) {
+      toast.error("Transcription failed");
+      return { success: false, message: error.message };
+    }
+  };
+
+  //function to get smart replies
+  const getSmartReplies = async (lastMessages) => {
+    try {
+      const response = await axios.post("/api/smart-reply/generate", { lastMessages });
+      return response.data;
+    } catch (error) {
+      toast.error("Failed to generate smart replies");
+      return { success: false, message: error.message };
+    }
+  };
+
+  //function to translate a message via Groq
+  const translateMessage = async (text, targetLanguage = "English") => {
+    try {
+      const { data } = await axios.post("/api/translate/translate", { text, targetLanguage });
+      return data;
+    } catch (error) {
+      toast.error("Translation failed");
+      return { success: false, message: error.message };
+    }
+  };
+
+  //function to rewrite a message in a given tone via Groq
+  const rewriteMessage = async (text, tone) => {
+    try {
+      const { data } = await axios.post("/api/rewrite/rewrite", { text, tone });
+      return data;
+    } catch (error) {
+      toast.error("Rewrite failed");
+      return { success: false, message: error.message };
+    }
+  };
+
   useEffect(() => {
     subscribeToMessage();
     return () => unsubscribeFromMessages();
@@ -112,6 +160,10 @@ export const ChatProvider = ({ children }) => {
     unseenMessages,
     setUnseenMessages,
     generateSummary,
+    transcribeAudio,
+    getSmartReplies,
+    translateMessage,
+    rewriteMessage,
   };
   return <ChatContext.Provider value={value}>{children}</ChatContext.Provider>;
 };

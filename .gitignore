@@ -256,3 +256,5 @@ frontend/public/vite.svg
 .DS_Store?
 ehthumbs.db
 Thumbs.db
+
+.agents/workflows

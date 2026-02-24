@@ -7,6 +7,10 @@ import { connectDB } from "./lib/db.js";
 import userRouter from "./routes/userRoutes.js";
 import messageRouter from "./routes/messageRoutes.js";
 import summaryRouter from "./routes/summaryRoutes.js";
+import voiceRouter from "./routes/voiceRoutes.js";
+import smartReplyRouter from "./routes/smartReplyRoutes.js";
+import translateRouter from "./routes/translateRoutes.js";
+import rewriteRouter from "./routes/rewriteRoutes.js";
 import { Server } from "socket.io"; // ✅ Correct import
 
 // Create Express app and HTTP server
@@ -31,6 +35,21 @@ io.on("connection", (socket) => {
   // Emit online users to all connected clients
   io.emit("getOnlineUsers", Object.keys(userSocketMap));
 
+  // Typing indicator — relay to the specific receiver only
+  socket.on("typing", ({ receiverId }) => {
+    const receiverSocketId = userSocketMap[receiverId];
+    if (receiverSocketId) {
+      io.to(receiverSocketId).emit("userTyping", { senderId: userId });
+    }
+  });
+
+  socket.on("stopTyping", ({ receiverId }) => {
+    const receiverSocketId = userSocketMap[receiverId];
+    if (receiverSocketId) {
+      io.to(receiverSocketId).emit("userStoppedTyping", { senderId: userId });
+    }
+  });
+
   socket.on("disconnect", () => {
     // console.log("User Disconnected:", userId);
     delete userSocketMap[userId];
@@ -47,14 +66,18 @@ app.use("/api/status", (req, res) => res.send("Server is live"));
 app.use("/api/auth", userRouter);
 app.use("/api/messages", messageRouter);
 app.use("/api/summary", summaryRouter);
+app.use("/api/voice", voiceRouter);
+app.use("/api/smart-reply", smartReplyRouter);
+app.use("/api/translate", translateRouter);
+app.use("/api/rewrite", rewriteRouter);
 
 // Connect to MongoDB
 await connectDB(); // ✅ works only if Node 18+ with type: "module"
 
 // Start server
-if(process.env.NODE_ENV !== "production"){
-const PORT = process.env.PORT || 5000;
-server.listen(PORT, () => console.log("Server running on PORT:", PORT));
+if (process.env.NODE_ENV !== "production") {
+  const PORT = process.env.PORT || 5000;
+  server.listen(PORT, () => console.log("Server running on PORT:", PORT));
 }
 
 //export server for vercel

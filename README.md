@@ -38,7 +38,7 @@ A full-stack real-time chat application with AI-powered conversation summarizati
 ## 🚀 Quick Start
 
 ### Prerequisites
-- Node.js (v16 or higher)
+- Node.js (v18 or higher)
 - MongoDB Atlas account or local MongoDB installation
 - Cloudinary account
 - Groq API key
@@ -136,10 +136,10 @@ To use the AI summary feature:
 ```
 smart-messenger/
 ├── frontend/
+│   ├── context/            # React context providers
 │   ├── src/
 │   │   ├── components/     # React components
 │   │   ├── pages/          # Page components
-│   │   ├── context/        # React context providers
 │   │   ├── assets/         # Static assets
 │   │   └── lib/            # Utility functions
 │   ├── public/             # Public assets
@@ -175,7 +175,6 @@ smart-messenger/
 - Password hashing with bcrypt
 - Input validation and sanitization
 - Secure file uploads with Cloudinary
-- Rate limiting for API endpoints (when deployed)
 
 ## 📱 Mobile Responsiveness
 

@@ -56,7 +56,7 @@ export const generateChatSummary = async (req, res) => {
 Summarize the following chat conversation in a concise and natural way.
  provide a short paragraph covering the main points.
 
-Also, identify and include (only if present, dont include these points if not necessary):
+If present include (only if present, dont include these points if not necessary):
 - Any tasks or action items
 - Any scheduled events
 - Any important decisions
